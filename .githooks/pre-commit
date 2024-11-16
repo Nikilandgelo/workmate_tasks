@@ -1,0 +1,55 @@
+#!/bin/bash
+
+
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+NO_COLOR='\033[0m'
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+echo -e "${GREEN}Working directory is: $(pwd)${NO_COLOR}"
+
+VENV_RUFF_PATH="./.venv/bin/ruff"
+
+# Determine if Ruff is available
+if command -v ruff &>/dev/null; then
+    echo -e "${GREEN}Ruff is installed globally."
+    RUFF_CMD="ruff"
+elif [[ -x "$VENV_RUFF_PATH" ]]; then
+    echo -e "${GREEN}Ruff is installed in .venv."
+    RUFF_CMD="$VENV_RUFF_PATH"
+elif command -v docker &>/dev/null; then
+    echo -e "${GREEN}Docker is available. Using Docker to run Ruff."
+    RUFF_CMD="docker run --rm -w /app -v $(pwd):/app ghcr.io/astral-sh/ruff:0.7.4-alpine ruff"
+else
+    echo -e "${RED}Ruff is not installed globally, in .venv, or available via Docker."
+    exit 1
+fi
+
+# Get staged Python files
+files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.py$')
+
+# Exit early if no Python files are staged
+if [[ -z "$files" ]]; then
+    echo -e "${YELLOW}No Python files staged for commit.${NO_COLOR}"
+    exit 0
+fi
+
+# Run Ruff format
+echo -e "${YELLOW}Running Ruff formatter on staged files...${NO_COLOR}"
+${RUFF_CMD} format $files
+git add $files
+
+# Run Ruff linting with auto-fix
+echo -e "${YELLOW}Running Ruff lint check with auto-fix on staged files...${NO_COLOR}"
+${RUFF_CMD} check $files --fix
+git add $files
+
+# Run Ruff check to ensure no lint issues remain
+echo -e "${YELLOW}Final Ruff lint check...${NO_COLOR}"
+if ! ${RUFF_CMD} check $files; then
+    echo -e "${RED}Ruff found issues that need fixing. Please resolve them before committing.${NO_COLOR}"
+    exit 1
+fi
+
+echo -e "${GREEN}Ruff formatting and linting passed. Proceeding with commit.${NO_COLOR}"
