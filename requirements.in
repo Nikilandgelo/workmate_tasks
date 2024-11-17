@@ -1,1 +1,3 @@
 ruff
+colorama
+termcolor
