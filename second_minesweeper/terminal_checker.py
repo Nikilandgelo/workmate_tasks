@@ -17,5 +17,7 @@ def make_terminal_calc(grid_size: int):
     space_for_lines: int = max(terminal.columns // 10, 8)
     remaining_width: int = terminal.columns - space_for_lines
     cell_width: int = remaining_width // grid_size
-    column_headers: str = "".join(str(i).ljust(cell_width) for i in range(grid_size))
+    column_headers: str = "".join(
+        str(i).ljust(cell_width) for i in range(grid_size)
+    )
     return space_for_lines, remaining_width, cell_width, column_headers

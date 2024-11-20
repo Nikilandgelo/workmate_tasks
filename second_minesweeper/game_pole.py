@@ -15,7 +15,9 @@ class GamePole:
             )
         self.grid_size: int = grid_size
         self.cell_counter: int = grid_size**2 - num_mines
-        self.pole = [[Cell() for _ in range(grid_size)] for _ in range(grid_size)]
+        self.pole = [
+            [Cell() for _ in range(grid_size)] for _ in range(grid_size)
+        ]
         mine_locations = set()
         while len(mine_locations) < num_mines:
             row: int = randint(0, grid_size - 1)
@@ -41,13 +43,20 @@ class GamePole:
                 try:
                     row = int(input(colored("Enter row: ", "magenta")))
                     col = int(input(colored("Enter column: ", "magenta")))
-                    if not (0 <= row < self.grid_size and 0 <= col < self.grid_size):
-                        print(colored("Invalid cell coordinates. Try again.", "red"))
+                    if not (
+                        0 <= row < self.grid_size and 0 <= col < self.grid_size
+                    ):
+                        print(
+                            colored(
+                                "Invalid cell coordinates. Try again.", "red"
+                            )
+                        )
                         continue
                     cell: Cell = self.pole[row][col]
                     if cell.mine:
                         self.__end_of_game(
-                            ("BOOM! Sadly you hit a mine, see you next time."), "red"
+                            ("BOOM! Sadly you hit a mine, see you next time."),
+                            "red",
                         )
                     cell.fl_open = True
                     self.cell_counter -= 1
@@ -57,7 +66,10 @@ class GamePole:
                         )
                 except ValueError:
                     print(
-                        colored("Please enter valid numbers for row and column.", "red")
+                        colored(
+                            "Please enter valid numbers for row and column.",
+                            "red",
+                        )
                     )
             elif user_choice == "2":
                 break
@@ -74,9 +86,14 @@ class GamePole:
             + colored("-" * self.remaining_width, "cyan")
         )
         for number, row in enumerate(self.pole):
-            cells: str = "".join(str(cell).ljust(self.cell_width) for cell in row)
+            cells: str = "".join(
+                str(cell).ljust(self.cell_width) for cell in row
+            )
             cells = colored(cells, "magenta")
-            print(colored(f"{number} | ".rjust(self.space_for_lines), "green") + cells)
+            print(
+                colored(f"{number} | ".rjust(self.space_for_lines), "green")
+                + cells
+            )
 
     def __end_of_game(self, text: str, color: str):
         print(colored(text, color))
