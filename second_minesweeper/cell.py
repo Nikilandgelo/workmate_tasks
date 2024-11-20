@@ -2,6 +2,8 @@ from __future__ import annotations
 
 
 class Cell:
+    __slots__ = ("around_mines", "mine", "fl_open")
+
     def __init__(self, around_mines: int = 0, mine: bool = False) -> None:
         self.around_mines: int = around_mines
         self.mine: bool = mine
@@ -15,7 +17,10 @@ class Cell:
 
     @staticmethod
     def increase_neighbors_counters(
-        pole: list[list[Cell]], current_row: int, current_column: int, grid_size: int
+        pole: list[list[Cell]],
+        current_row: int,
+        current_column: int,
+        grid_size: int,
     ) -> None:
         adjacent_coords = (
             (-1, 0),
