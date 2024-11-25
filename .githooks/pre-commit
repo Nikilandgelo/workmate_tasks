@@ -35,19 +35,19 @@ if [[ -z "$files" ]]; then
     exit 0
 fi
 
+# Run Ruff linting with auto-fix
+echo -e "${YELLOW}Running Ruff lint check with auto-fix on staged files...${NO_COLOR}"
+${RUFF_CMD} check --fix $files
+git add $files
+
 # Run Ruff format
 echo -e "${YELLOW}Running Ruff formatter on staged files...${NO_COLOR}"
 ${RUFF_CMD} format $files
 git add $files
 
-# Run Ruff linting with auto-fix
-echo -e "${YELLOW}Running Ruff lint check with auto-fix on staged files...${NO_COLOR}"
-${RUFF_CMD} check $files --fix
-git add $files
-
 # Run Ruff check to ensure no lint issues remain
 echo -e "${YELLOW}Final Ruff lint check...${NO_COLOR}"
-if ! ${RUFF_CMD} check $files; then
+if ! ${RUFF_CMD} check --fix $files; then
     echo -e "${RED}Ruff found issues that need fixing. Please resolve them before committing.${NO_COLOR}"
     exit 1
 fi
