@@ -1,7 +1,27 @@
+"""Checks terminal size and calculates layout parameters for the game."""
+
+# needed because tuple type hint not < 3.9 compatible
+from __future__ import annotations
+
 from os import get_terminal_size, terminal_size
 
+from exceptions import TerminalTooSmallError
 
-def make_terminal_calc(grid_size: int):
+
+def make_terminal_calc(grid_size: int) -> tuple[int, int, int, str]:
+    """Calculate the terminal layout parameters for the Minesweeper game.
+
+    Args:
+        grid_size: The size of the game grid.
+
+    Returns:
+        A tuple containing: space_for_lines, remaining_width, cell_width,
+        column_headers.
+
+    Raises:
+        ValueError: If the terminal size is too small to display the game.
+
+    """
     terminal: terminal_size = get_terminal_size()
 
     # 8 minimum width because "LINES | " equal 8 characters,
@@ -9,11 +29,7 @@ def make_terminal_calc(grid_size: int):
     min_width: int = 8 + (grid_size * 2)
     min_height: int = 8 + grid_size
     if terminal.columns < min_width or terminal.lines < min_height:
-        raise ValueError(
-            f"Terminal size is too small. Minimum size is "
-            f"{min_width}x{min_height}, your size is "
-            f"{terminal.columns}x{terminal.lines}."
-        )
+        raise TerminalTooSmallError(terminal, (min_width, min_height))
     space_for_lines: int = max(terminal.columns // 10, 8)
     remaining_width: int = terminal.columns - space_for_lines
     cell_width: int = remaining_width // grid_size
