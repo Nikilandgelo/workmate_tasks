@@ -6,3 +6,6 @@ asyncpg
 load_dotenv
 pytest
 pytest-asyncio
+beautifulsoup4
+aiohttp[speedups]
+pandas[excel]
