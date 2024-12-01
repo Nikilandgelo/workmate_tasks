@@ -56,7 +56,7 @@ Model = TypeVar(
 
 async def init_db_engine() -> AsyncEngine:
     """Initialize the database engine and create all tables."""
-    load_dotenv("./fourth_db_scheme/.env", override=True)
+    load_dotenv(override=True)
     global engine  # noqa: PLW0603
     engine = create_async_engine(
         f'postgresql+asyncpg://{getenv("POSTGRES_USER")}:'
