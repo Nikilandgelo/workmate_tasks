@@ -178,7 +178,7 @@ async def test_added_cities(
 
 async def test_added_steps(
     db_session: AsyncSession,
-    steps: tuple[Genre, Genre],
+    steps: tuple[Step, Step],
 ) -> None:
     """Test adding steps to the database."""
     result: tuple[Step, Step] = await add_data_in_db(db_session, steps)
