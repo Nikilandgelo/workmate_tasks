@@ -74,24 +74,54 @@ class SpimexTradingResults(UuidMixin):
 
     __tablename__ = "spimex_trading_results"
 
-    exchange_product_id: Mapped[str] = default_mapped_column(String(255))
-    exchange_product_name: Mapped[str] = default_mapped_column(String(255))
-    oil_id: Mapped[str] = default_mapped_column(String(4))
-    delivery_basis_id: Mapped[str] = default_mapped_column(String(3))
-    delivery_basis_name: Mapped[str] = default_mapped_column(String(255))
-    delivery_type_id: Mapped[str] = default_mapped_column(String(1))
-    volume: Mapped[int] = default_mapped_column(Integer())
-    total: Mapped[int] = default_mapped_column(Integer())
-    count: Mapped[int] = default_mapped_column(Integer())
+    exchange_product_id: Mapped[str] = default_mapped_column(
+        String(255),
+        comment="Unique identifier for the exchange product.",
+    )
+    exchange_product_name: Mapped[str] = default_mapped_column(
+        String(255),
+        comment="Full name of the exchange product.",
+    )
+    oil_id: Mapped[str] = default_mapped_column(
+        String(4),
+        comment="4-character identifier for the oil type",
+    )
+    delivery_basis_id: Mapped[str] = default_mapped_column(
+        String(3),
+        comment="3-character code for delivery basis",
+    )
+    delivery_basis_name: Mapped[str] = default_mapped_column(
+        String(255),
+        comment="Full name of the delivery basis location.",
+    )
+    delivery_type_id: Mapped[str] = default_mapped_column(
+        String(1),
+        comment="Single character identifying delivery type",
+    )
+    volume: Mapped[int] = default_mapped_column(
+        Integer(),
+        comment="Total trading volume for the product.",
+    )
+    total: Mapped[int] = default_mapped_column(
+        Integer(),
+        comment="Total monetary value of trades",
+    )
+    count: Mapped[int] = default_mapped_column(
+        Integer(),
+        comment="Number of trades executed",
+    )
     date: Mapped[Date] = default_mapped_column(
         Date(),
         default=func.current_date(),
+        comment="Trading date, defaults to current date",
     )
     created_on: Mapped[DateTime] = default_mapped_column(
         DateTime(),
         default=func.now(),
+        comment="Record creation timestamp, auto-set to now",
     )
     updated_on: Mapped[DateTime] = default_mapped_column(
         DateTime(),
         default=func.now(),
+        comment="Last update timestamp, auto-set to now",
     )
