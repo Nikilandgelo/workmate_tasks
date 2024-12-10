@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
+from .config import DOMAIN, START_DATE, START_URL
 from .db import add_new_data, init_db_engine
 from .excel_parser import parse_excel_file
 
@@ -47,7 +48,6 @@ async def get_page_links() -> None:
 
     """
     session_maker: async_sessionmaker[AsyncSession] = await init_db_engine()
-    start_date: datetime = datetime(2023, 1, 1, tzinfo=UTC)
     counter: int = 1
     correct_date: bool = True
     db_tasks: list[Task] = []
@@ -55,10 +55,7 @@ async def get_page_links() -> None:
         while correct_date:
             async with (
                 ClientSession() as session,
-                session.get(
-                    f"https://spimex.com/markets/oil_products/trades/results/"
-                    f"?page=page-{counter}",
-                ) as response,
+                session.get(f"{START_URL}?page=page-{counter}") as response,
             ):
                 full_document: BeautifulSoup = BeautifulSoup(
                     await response.text(),
@@ -69,7 +66,6 @@ async def get_page_links() -> None:
                     "div[data-tabcontent]:nth-of-type(1) "
                     "div.accordeon-inner__item",
                 )
-
                 async with TaskGroup() as html_tg:
                     for container in links_container:
                         date: datetime = datetime.strptime(
@@ -77,13 +73,12 @@ async def get_page_links() -> None:
                             "%d.%m.%Y",
                         ).replace(tzinfo=UTC)
                         print(f"Took new file from date: {date}")
-                        if date < start_date:
+                        if date < START_DATE:
                             correct_date = False
                             print("\nDate is exceed... Exiting\n")
                             break
                         link: str = (
-                            f'https://spimex.com/'
-                            f'{container.find("a").get("href")}'
+                            f'{DOMAIN}/{container.find("a").get("href")}'
                         )
                         task: Task = html_tg.create_task(
                             parse_excel_file(link),

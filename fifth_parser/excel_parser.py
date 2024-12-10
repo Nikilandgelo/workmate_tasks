@@ -11,15 +11,7 @@ from re import fullmatch
 from aiohttp import ClientSession
 from pandas import DataFrame, read_excel
 
-# ruff: noqa: RUF001
-needed_columns: list[str] = [
-    "Код Инструмента",
-    "Наименование Инструмента",
-    "Базис поставки",
-    "Объем Договоров в единицах измерения",
-    "Обьем Договоров, руб.",
-    "Количество Договоров, шт.",
-]
+from .config import COLUMNS_FROM_EXCEL, NEEDED_COLUMNS
 
 
 async def parse_excel_file(link: str) -> DataFrame:
@@ -45,10 +37,10 @@ async def parse_excel_file(link: str) -> DataFrame:
 
         df: DataFrame = read_excel(file_object, skiprows=6)
         df.columns = [col.replace("\n", " ").strip() for col in df.columns]
-        df: DataFrame = df[needed_columns]
-        df: DataFrame = df.dropna(subset=needed_columns, how="any")
-        df["Количество Договоров, шт."] = df[
-            "Количество Договоров, шт."
-        ].apply(lambda x: int(x) if fullmatch(r"[0-9]*", str(x)) else 0)
-        filtered_df: DataFrame = df[df["Количество Договоров, шт."] > 0]
+        df: DataFrame = df[COLUMNS_FROM_EXCEL]
+        df: DataFrame = df.dropna(subset=COLUMNS_FROM_EXCEL, how="any")
+        df[NEEDED_COLUMNS.get("count")] = df[
+            NEEDED_COLUMNS.get("count")
+        ].apply(lambda x: int(x) if fullmatch(r"[0-9]+", str(x)) else 0)
+        filtered_df: DataFrame = df[df[NEEDED_COLUMNS.get("count")] > 0]
         return filtered_df

@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from .config import NEEDED_COLUMNS
 from .models import Base, SpimexTradingResults
 
 
@@ -65,15 +66,25 @@ async def add_new_data(
     async with session_maker() as session:
         for _, row in df.iterrows():
             result: SpimexTradingResults = SpimexTradingResults(
-                exchange_product_id=row["Код Инструмента"],
-                exchange_product_name=row["Наименование Инструмента"],
-                oil_id=row["Код Инструмента"][:4],
-                delivery_basis_id=row["Код Инструмента"][4:7],
-                delivery_basis_name=row["Базис поставки"],
-                delivery_type_id=row["Код Инструмента"][-1],
-                volume=int(row["Объем Договоров в единицах измерения"]),
-                total=round(float(row["Обьем Договоров, руб."])),  # noqa: RUF001
-                count=int(row["Количество Договоров, шт."]),
+                exchange_product_id=row[
+                    NEEDED_COLUMNS.get("exchange_product_id")
+                ],
+                exchange_product_name=row[
+                    NEEDED_COLUMNS.get("exchange_product_name")
+                ],
+                oil_id=row[NEEDED_COLUMNS.get("exchange_product_id")][:4],
+                delivery_basis_id=row[
+                    NEEDED_COLUMNS.get("exchange_product_id")
+                ][4:7],
+                delivery_basis_name=row[
+                    NEEDED_COLUMNS.get("delivery_basis_name")
+                ],
+                delivery_type_id=row[
+                    NEEDED_COLUMNS.get("exchange_product_id")
+                ][-1],
+                volume=int(row[NEEDED_COLUMNS.get("volume")]),
+                total=round(float(row[NEEDED_COLUMNS.get("total")])),
+                count=int(row[NEEDED_COLUMNS.get("count")]),
             )
             trading_results.append(result)
     session.add_all(trading_results)
