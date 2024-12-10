@@ -3,7 +3,7 @@ colorama
 termcolor
 sqlalchemy[asyncio]
 asyncpg
-load_dotenv
+python-dotenv
 pytest
 pytest-asyncio
 beautifulsoup4
