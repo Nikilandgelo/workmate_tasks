@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from .config import NEEDED_COLUMNS
+from .config import NeededColumns
 from .models import Base, SpimexTradingResults
 
 
@@ -67,24 +67,24 @@ async def add_new_data(
         for _, row in df.iterrows():
             result: SpimexTradingResults = SpimexTradingResults(
                 exchange_product_id=row[
-                    NEEDED_COLUMNS.get("exchange_product_id")
+                    NeededColumns.EXCHANGE_PRODUCT_ID.value
                 ],
                 exchange_product_name=row[
-                    NEEDED_COLUMNS.get("exchange_product_name")
+                    NeededColumns.EXCHANGE_PRODUCT_NAME.value
                 ],
-                oil_id=row[NEEDED_COLUMNS.get("exchange_product_id")][:4],
-                delivery_basis_id=row[
-                    NEEDED_COLUMNS.get("exchange_product_id")
-                ][4:7],
+                oil_id=row[NeededColumns.EXCHANGE_PRODUCT_ID.value][:4],
+                delivery_basis_id=row[NeededColumns.EXCHANGE_PRODUCT_ID.value][
+                    4:7
+                ],
                 delivery_basis_name=row[
-                    NEEDED_COLUMNS.get("delivery_basis_name")
+                    NeededColumns.DELIVERY_BASIS_NAME.value
                 ],
-                delivery_type_id=row[
-                    NEEDED_COLUMNS.get("exchange_product_id")
-                ][-1],
-                volume=int(row[NEEDED_COLUMNS.get("volume")]),
-                total=round(float(row[NEEDED_COLUMNS.get("total")])),
-                count=int(row[NEEDED_COLUMNS.get("count")]),
+                delivery_type_id=row[NeededColumns.EXCHANGE_PRODUCT_ID.value][
+                    -1
+                ],
+                volume=int(row[NeededColumns.VOLUME.value]),
+                total=round(float(row[NeededColumns.TOTAL.value])),
+                count=int(row[NeededColumns.COUNT.value]),
             )
             trading_results.append(result)
     session.add_all(trading_results)

@@ -11,7 +11,7 @@ from re import fullmatch
 from aiohttp import ClientSession
 from pandas import DataFrame, read_excel
 
-from .config import COLUMNS_FROM_EXCEL, NEEDED_COLUMNS
+from .config import NeededColumns
 
 
 async def parse_excel_file(link: str) -> DataFrame:
@@ -34,13 +34,17 @@ async def parse_excel_file(link: str) -> DataFrame:
     """
     async with ClientSession() as session, session.get(link) as response:
         file_object: BytesIO = BytesIO(await response.read())
+        all_values: list[str] = [
+            xls_column_name
+            for _, xls_column_name in NeededColumns.__members__.items()
+        ]
 
         df: DataFrame = read_excel(file_object, skiprows=6)
         df.columns = [col.replace("\n", " ").strip() for col in df.columns]
-        df: DataFrame = df[COLUMNS_FROM_EXCEL]
-        df: DataFrame = df.dropna(subset=COLUMNS_FROM_EXCEL, how="any")
-        df[NEEDED_COLUMNS.get("count")] = df[
-            NEEDED_COLUMNS.get("count")
-        ].apply(lambda x: int(x) if fullmatch(r"[0-9]+", str(x)) else 0)
-        filtered_df: DataFrame = df[df[NEEDED_COLUMNS.get("count")] > 0]
+        df: DataFrame = df[all_values]
+        df: DataFrame = df.dropna(subset=all_values, how="any")
+        df[NeededColumns.COUNT.value] = df[NeededColumns.COUNT.value].apply(
+            lambda x: int(x) if fullmatch(r"[0-9]+", str(x)) else 0,
+        )
+        filtered_df: DataFrame = df[df[NeededColumns.COUNT.value] > 0]
         return filtered_df
