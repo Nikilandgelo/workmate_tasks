@@ -9,3 +9,5 @@ pytest-asyncio
 beautifulsoup4
 aiohttp[speedups]
 pandas[excel]
+djangorestframework
+psycopg2
