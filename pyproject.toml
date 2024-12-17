@@ -4,3 +4,7 @@ ignore = ['D104', 'ANN401', 'T201', 'S101', 'FA102']
 
 [tool.ruff]
 line-length = 79
+exclude = [
+    'migrations',
+    'manage.py',
+]
