@@ -64,5 +64,5 @@ This will build and start the `PostgreSQL` and `Django` application containers.
 - **Views**:
   - `DogViewSet`: Provides CRUD operations for dogs.
   - `BreedViewSet`: Provides CRUD operations for breeds.
-  > [!NOTE]
-  > Both viewsets are optimized with subquery and select_related to minimize database calls.
+> [!NOTE]
+> Both viewsets are optimized with subquery and select_related to minimize database calls.
