@@ -24,36 +24,59 @@ class Dog(models.Model):
 
     """
 
+    class Meta:
+        verbose_name = "Dog"
+        verbose_name_plural = "Dogs"
+
     class Gender(models.TextChoices):
         """Define the gender options for a dog."""
 
         MALE = "Male"
         FEMALE = "Female"
 
-    name: str = models.CharField(max_length=255, db_comment="Name of the dog")
-    age: int = models.PositiveSmallIntegerField(db_comment="Age of the dog")
+    name: str = models.CharField(
+        max_length=255,
+        db_comment="Name of the dog with length of 255",
+        verbose_name="Name",
+        help_text="Dog name can be up to 255 characters long.",
+    )
+    age: int = models.PositiveSmallIntegerField(
+        db_comment="Age of the dog more or equal to 0",
+        verbose_name="Age",
+        help_text="Dog age must be a positive integer.",
+    )
     breed: Breed = models.ForeignKey(
         Breed,
         on_delete=models.CASCADE,
         related_name="dogs",
-        db_comment="Breed of the dog",
+        db_comment="ID of the dog's breed",
+        verbose_name="Breed",
+        help_text="Dog breed must be a valid breed ID.",
     )
     gender: str = models.CharField(
         choices=Gender,
         max_length=6,
-        db_comment="Gender of the dog",
+        db_comment="Gender which can be one of: Male or Female",
+        verbose_name="Gender",
+        help_text="Dog gender must be one of: Male, Female.",
     )
     color: str = models.CharField(
         max_length=100,
-        db_comment="Color of the dog",
+        db_comment="Color of the dog with length of 100",
+        verbose_name="Color",
+        help_text="Dog color must be a string with length of 100.",
     )
     favorite_food: str = models.CharField(
         max_length=255,
-        db_comment="Favorite food of the dog",
+        db_comment="Favorite food with length of 255",
+        verbose_name="Favorite Food",
+        help_text="Dog favorite food must be a string with length of 255.",
     )
     favorite_toy: str = models.CharField(
         max_length=255,
-        db_comment="Favorite toy of the dog",
+        db_comment="Favorite toy with length of 255",
+        verbose_name="Favorite Toy",
+        help_text="Dog favorite toy must be a string with length of 255.",
     )
 
     def __str__(self) -> str:

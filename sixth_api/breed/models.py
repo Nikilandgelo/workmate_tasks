@@ -22,6 +22,10 @@ class Breed(models.Model):
 
     """
 
+    class Meta:
+        verbose_name = "Breed"
+        verbose_name_plural = "Breeds"
+
     class Size(models.TextChoices):
         """Define the sizes available for breeds.
 
@@ -40,41 +44,54 @@ class Breed(models.Model):
 
     name: str = models.CharField(
         max_length=255,
-        db_comment="Name of the breed",
+        db_comment="Unique name of the breed with length of 255",
+        verbose_name="Name",
+        help_text="Breed name must be unique.",
         unique=True,
     )
     size: str = models.CharField(
         choices=Size,
         max_length=6,
-        db_comment="Size of the breed",
+        db_comment="Size of the breed which can be one of: Tiny, Small, "
+                   "Medium, or Large",
+        verbose_name="Size",
+        help_text="Breed size must be one of: Tiny, Small, Medium, or Large.",
     )
     friendliness: int = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(1),
             MaxValueValidator(5),
         ],
-        db_comment="Friendliness of the breed",
+        db_comment="Friendliness from 1 to 5",
+        verbose_name="Friendliness",
+        help_text="Breed friendliness must be between 1 and 5.",
     )
     trainability: int = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(1),
             MaxValueValidator(5),
         ],
-        db_comment="Trainability of the breed",
+        db_comment="Trainability from 1 to 5",
+        verbose_name="Trainability",
+        help_text="Breed trainability must be between 1 and 5.",
     )
     shedding_amount: int = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(1),
             MaxValueValidator(5),
         ],
-        db_comment="Shedding amount of the breed",
+        db_comment="Shedding amount from 1 to 5",
+        verbose_name="Shedding Amount",
+        help_text="Breed shedding amount must be between 1 and 5.",
     )
     exercise_needs: int = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(1),
             MaxValueValidator(5),
         ],
-        db_comment="Exercise needs of the breed",
+        db_comment="Exercise needs from 1 to 5",
+        verbose_name="Exercise Needs",
+        help_text="Breed exercise needs must be between 1 and 5.",
     )
 
     def __str__(self) -> str:
