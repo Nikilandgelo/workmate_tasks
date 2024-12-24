@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     "user",
     "breed",
     "dog",
-    "drf_spectacular"
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -150,14 +150,14 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "user.User"
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SPECTACULAR_SETTINGS = {
-    'SCHEMA_PATH_PREFIX': 'api/',
-    'COMPONENT_SPLIT_REQUEST': 'true',
-    'TITLE': 'Dog API',
-    'DESCRIPTION': 'A simple API for managing dogs',
-    'VERSION': '1.0.0',
-    'TAGS': ['Dog', 'Breed', 'User'],
+    "SCHEMA_PATH_PREFIX": "api/",
+    "COMPONENT_SPLIT_REQUEST": "true",
+    "TITLE": "Dog API",
+    "DESCRIPTION": "A simple API for managing dogs",
+    "VERSION": "1.0.0",
+    "TAGS": ["Dog", "Breed", "User"],
 }
