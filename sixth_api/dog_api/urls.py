@@ -20,6 +20,7 @@ from breed.views import BreedViewSet
 from django.contrib import admin
 from django.urls import include, path
 from dog.views import DogViewSet
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework import routers
 
 router = routers.SimpleRouter()
@@ -29,4 +30,6 @@ router.register(r"breeds", BreedViewSet, basename="breeds")
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(router.urls)),
+    path("api/swagger/", SpectacularSwaggerView.as_view(), name="swagger"),
+    path("api/download_schema/", SpectacularAPIView.as_view(), name="schema"),
 ]

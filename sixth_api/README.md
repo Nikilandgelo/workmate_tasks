@@ -40,19 +40,13 @@ This will build and start the `PostgreSQL` and `Django` application containers.
 - `PostgreSQL`: On port `5432` of your machine.
 - `Django`: On port `8000` of your machine.
 
-## 📖 API Reference
-|   Method   | Endpoint            | Description                                                      |
-|:----------:|:--------------------|:-----------------------------------------------------------------|
-|  **GET**   | `/api/dogs/`        | Retrieve a list of all dogs.                                     |
-|  **POST**  | `/api/dogs/`        | Create a new dog with attributes such as name, age, breed, etc.  |
-|  **GET**   | `/api/dogs/{id}/`   | Retrieve details of a specific dog by ID.                        |
-|  **PUT**   | `/api/dogs/{id}/`   | Update details of a specific dog.                                |
-| **DELETE** | `/api/dogs/{id}/`   | Delete a specific dog by ID.                                     |
-|  **GET**   | `/api/breeds/`      | Retrieve a list of all breeds.                                   |
-|  **POST**  | `/api/breeds/`      | Create a new breed with attributes like size, friendliness, etc. |
-|  **GET**   | `/api/breeds/{id}/` | Retrieve details of a specific breed by ID.                      |
-|  **PUT**   | `/api/breeds/{id}/` | Update details of a specific breed.                              |
-| **DELETE** | `/api/breeds/{id}/` | Delete a specific breed by ID.                                   |
+## 📖 API Documentation
+The **API** is documented and accessible via `Swagger UI`, powered by `drf-spectacular`. Use the following endpoint to explore the available API routes and their schemas:
+- **Swagger UI** : `http://localhost:8000/api/swagger/`
+- **Download Schema (YAML)**: `http://localhost:8000/api/download_schema/`
+> [!NOTE]
+> Ensure the server is running to access the documentation.
+
 
 ## 🏗️ App Architecture
 - **Models**:
