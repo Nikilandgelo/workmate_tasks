@@ -175,5 +175,3 @@ cython_debug/
 #.idea/
 
 requirements.txt
-**/migrations/*
-!**/migrations/__init__.py
