@@ -22,4 +22,13 @@ class BreedSerializer(serializers.ModelSerializer):
         """Define model and fields for serialization using 'Breed' model."""
 
         model = Breed
-        fields = "__all__"
+        fields = [
+            'id',
+            'name',
+            'size',
+            'friendliness',
+            'trainability',
+            'shedding_amount',
+            'exercise_needs',
+            'dog_count'
+        ]
