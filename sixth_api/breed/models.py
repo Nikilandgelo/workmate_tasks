@@ -23,6 +23,14 @@ class Breed(models.Model):
     """
 
     class Meta:
+        """Define the Meta class for the Breed model.
+
+        Attributes:
+            verbose_name (str): The verbose name of the model.
+            verbose_name_plural (str): The verbose name of the model in plural.
+
+        """
+
         verbose_name = "Breed"
         verbose_name_plural = "Breeds"
 
@@ -53,7 +61,7 @@ class Breed(models.Model):
         choices=Size,
         max_length=6,
         db_comment="Size of the breed which can be one of: Tiny, Small, "
-                   "Medium, or Large",
+        "Medium, or Large",
         verbose_name="Size",
         help_text="Breed size must be one of: Tiny, Small, Medium, or Large.",
     )

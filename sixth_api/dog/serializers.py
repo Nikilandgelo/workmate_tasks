@@ -32,7 +32,7 @@ class DogSerializer(serializers.ModelSerializer):
 
         model = Dog
         fields: ClassVar[list[str]] = [
-            'id',
+            "id",
             "name",
             "age",
             "breed",

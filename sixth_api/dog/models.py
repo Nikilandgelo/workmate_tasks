@@ -25,6 +25,14 @@ class Dog(models.Model):
     """
 
     class Meta:
+        """Define the Meta class for the Dog model.
+
+        Attributes:
+            verbose_name (str): The verbose name of the model.
+            verbose_name_plural (str): The verbose name of the model in plural.
+
+        """
+
         verbose_name = "Dog"
         verbose_name_plural = "Dogs"
 
