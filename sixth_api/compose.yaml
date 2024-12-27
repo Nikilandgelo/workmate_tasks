@@ -1,0 +1,42 @@
+name: sixth_api
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres
+    env_file:
+      - ../.env
+    healthcheck:
+      test: "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"
+      interval: 3s
+      timeout: 7s
+      retries: 6
+    networks:
+      - main_network
+    ports:
+      - "5432:5432"                   # just for debugging in datagrip
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  django:
+    build:
+      context: .
+      additional_contexts:
+        - root=..
+    container_name: django_app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - main_network
+    env_file:
+      - ../.env
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
+
+networks:
+  main_network:

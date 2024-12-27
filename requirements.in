@@ -11,3 +11,6 @@ aiohttp[speedups]
 pandas[excel]
 djangorestframework
 psycopg2
+djangorestframework-stubs
+gunicorn
+drf_spectacular

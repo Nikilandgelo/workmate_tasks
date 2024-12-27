@@ -2,6 +2,8 @@
 
 from os import terminal_size
 
+from rest_framework import serializers
+
 
 class EmptyLinkedListError(Exception):
     """Raise this exception when a method is called on an empty LinkedList.
@@ -98,4 +100,33 @@ class WrongTypeError(Exception):
             f"The object '{instance[0]}' is an instance of "
             f"'{instance[0].__class__.__name__}', but "
             f"'{instance[1].__name__}' was expected.",
+        )
+
+
+class CustomSerializerFieldError(serializers.ValidationError):
+    """Raise this exception when a custom serializer field is invalid.
+
+    Args:
+        model_name: The name of the model.
+        expected_field: The expected field name.
+        user_data: The user-provided data.
+
+    """
+
+    def __init__(
+        self,
+        model_name: str,
+        expected_field: str,
+        user_data: str,
+    ) -> None:
+        """Initialize the CustomSerializerFieldError.
+
+        Args:
+            model_name: The name of the model.
+            expected_field: The expected field name.
+            user_data: The user-provided data.
+
+        """
+        super().__init__(
+            f'{model_name} with {expected_field} "{user_data}" does not exist',
         )
