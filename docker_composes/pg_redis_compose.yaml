@@ -1,0 +1,38 @@
+name: postgres_redis_compose
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres
+    env_file:
+      - ../.env
+    healthcheck:
+      test: "pg_isready -U $POSTGRES_USER"
+      interval: 3s
+      timeout: 7s
+      retries: 6
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../postgres_init.sh:/docker-entrypoint-initdb.d/postgres_init.sh
+      - ../.env.dev:/.env.dev                # important to put this in root cuz it's running bash file from there
+      - ../.env.test:/.env.test              # important to put this in root cuz it's running bash file from there
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    healthcheck:
+      test: "redis-cli ping"
+      interval: 3s
+      timeout: 7s
+      retries: 6
+    ports:
+      - "${REDIS_PORT}:6379"
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

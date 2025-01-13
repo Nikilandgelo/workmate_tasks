@@ -1,6 +1,6 @@
 [tool.ruff.lint]
 select = ['ALL']
-ignore = ['D104', 'ANN401', 'T201', 'S101', 'FA102', 'N999']
+ignore = ['D104', 'ANN401', 'T201', 'S101', 'FA102', 'N999', 'S104', 'DTZ011', 'PLR0913', 'G003']
 
 [tool.ruff]
 line-length = 79
@@ -8,3 +8,7 @@ exclude = [
     'migrations',
     'manage.py',
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"conftest.py" = ['ARG001', 'ANN001']
+'test*.py' = ['ANN201', 'ANN001', 'PT006']

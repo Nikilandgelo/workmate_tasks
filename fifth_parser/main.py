@@ -1,96 +1,96 @@
-"""Parse SPIMEX market data from their official website and store it in db.
+"""Main module for the application.
 
-This module handles web scraping of oil products trading results from SPIMEX,
-downloads Excel files containing market data, and stores parsed information in
-a database. It implements asynchronous operations for improved performance.
-
-Note:
-    The parser starts from January 1st, 2023 and works backwards in time.
-
+This module contains the main logic for the application, including
+asynchronous parsing trade data from the website, saving it to the database
+and starting the FastAPI server.
 """
 
-from asyncio import Task, TaskGroup, run
-from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+import logging
+from asyncio import Task, as_completed, create_task, run
+from datetime import date
+from time import time
 
+import uvicorn
 from aiohttp import ClientSession
-from bs4 import BeautifulSoup
+from termcolor import colored
 
-from .config import DOMAIN, START_DATE, START_URL
-from .db import add_new_data, init_db_engine
+from .config import get_settings
+from .db import DBManager
 from .excel_parser import parse_excel_file
+from .html_parser import get_all_xls_links
 
-if TYPE_CHECKING:
-    from bs4.element import ResultSet, Tag
-    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+db_manager = DBManager()
 
 
 async def get_page_links() -> None:
-    """Fetch and process SPIMEX trading results pages asynchronously.
+    """Fetch and parse trade data from website pages.
 
-    Iterates through paginated trading results, downloads Excel files
-    containing market data, and stores parsed information in the database.
-    Processing starts from the most recent data and continues until reaching
-    January 1st, 2023.
-
-    The function performs the following steps:
-    1. Initialize database connection
-    2. Fetch HTML content from each page
-    3. Extract Excel file links and corresponding dates
-    4. Download and parse Excel files
-    5. Store parsed data in the database
-
-    Returns:
-        None
-
-    Raises:
-        aiohttp.ClientError: If network requests fail
-
+    Iterates through pages, extracts excel links, and saves data to DB.
     """
-    session_maker: async_sessionmaker[AsyncSession] = await init_db_engine()
+    if await db_manager.check_if_data_exists():
+        logging.warning(
+            colored(
+                "Data in DB already exists, exiting without parsing...",
+                "yellow",
+            ),
+        )
+        return
     counter: int = 1
     correct_date: bool = True
     db_tasks: list[Task] = []
-    async with TaskGroup() as db_tg:
-        while correct_date:
-            async with (
-                ClientSession() as session,
-                session.get(f"{START_URL}?page=page-{counter}") as response,
-            ):
-                full_document: BeautifulSoup = BeautifulSoup(
-                    await response.text(),
-                    "html.parser",
+    while correct_date:
+        url: str = f"{get_settings().START_URL}?page=page-{counter}"
+        async with ClientSession() as session, session.get(url) as response:
+            logging.info(
+                colored(f"Fetching data from this url: {url}", "magenta"),
+            )
+            for container in await get_all_xls_links(response):
+                date_: list[str] = (
+                    container.find("span").get_text().split(".")[::-1]
                 )
-                links_container: ResultSet[Tag] = full_document.css.select(
-                    "div.page-content__tabs__blocks > "
-                    "div[data-tabcontent]:nth-of-type(1) "
-                    "div.accordeon-inner__item",
+                date_: list[int] = [int(x) for x in date_]
+                trade_date: date = date(*date_)
+                logging.info(
+                    colored(f"Took new file from date: {trade_date}", "cyan"),
                 )
-                async with TaskGroup() as html_tg:
-                    for container in links_container:
-                        date: datetime = datetime.strptime(
-                            container.find("span").get_text(),
-                            "%d.%m.%Y",
-                        ).replace(tzinfo=UTC)
-                        print(f"Took new file from date: {date}")
-                        if date < START_DATE:
-                            correct_date = False
-                            print("\nDate is exceed... Exiting\n")
-                            break
-                        link: str = (
-                            f'{DOMAIN}/{container.find("a").get("href")}'
-                        )
-                        task: Task = html_tg.create_task(
-                            parse_excel_file(link),
-                        )
-                        db_tasks.append(task)
-                for task in db_tasks:
-                    db_tg.create_task(
-                        add_new_data(session_maker, task.result()),
+                if trade_date < get_settings().START_DATE:
+                    correct_date = False
+                    logging.warning(
+                        colored("Date is exceed. Exiting...\n", "yellow"),
                     )
-                db_tasks.clear()
-                counter += 1
+                    break
+                link: str = (
+                    f"{get_settings().DOMAIN}/"
+                    f"{container.find('a').get('href')}"
+                )
+                task: Task = create_task(
+                    parse_excel_file(link, trade_date),
+                )
+                db_tasks.append(task)
+            async for task in as_completed(db_tasks):
+                await db_manager.add_new_data(task.result())
+            db_tasks.clear()
+            counter += 1
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        format=colored("{levelname} - ", "magenta")
+        + colored("{asctime}: ", "blue")
+        + "{message}",
+        style="{",
+        level=get_settings().LOG_LEVEL,
+    )
+    logging.info(colored("Starting SPIMEX trade data parser", "cyan"))
+    start_time: float = time()
     run(get_page_links())
+    logging.info(
+        colored(
+            text=f"Data successfully collected for "
+            f"{round(time() - start_time, 2)} seconds, "
+            f"starting uvicorn server now...",
+            color="green",
+            attrs=["bold"],
+        ),
+    )
+    uvicorn.run("fifth_parser.api.app:app", host="0.0.0.0", reload=True)

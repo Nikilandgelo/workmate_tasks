@@ -10,9 +10,7 @@ Classes:
     SpimexTradingResults: Model for storing SPIMEX trading data.
 """
 
-from uuid import UUID, uuid4
-
-from sqlalchemy import Date, DateTime, Integer, String, Uuid, func
+from sqlalchemy import BigInteger, Date, DateTime, Integer, String, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from fourth_db_scheme.sqlalchemy_fix import default_mapped_column
@@ -27,18 +25,23 @@ class Base(DeclarativeBase):
 
 
 class UuidMixin(Base):
-    """Mixin class to add a UUID primary key to SQLAlchemy models.
+    """Mixin class to add an ID primary key to SQLAlchemy models.
 
-    This class serves as an abstract base class that adds a UUID column
+    This class serves as an abstract base class that adds an ID column
     as the primary key for any SQLAlchemy model that inherits from it.
 
     Attributes:
-        uuid (Mapped[UUID]): The UUID primary key for the model.
+        id (Mapped[int]): The numeric primary key for the model.
 
     """
 
     __abstract__ = True
-    uuid: Mapped[UUID] = mapped_column(Uuid(), default=uuid4, primary_key=True)
+    id: Mapped[int] = mapped_column(
+        BigInteger(),
+        primary_key=True,
+        autoincrement=True,
+        comment="The numeric primary key for the model.",
+    )
 
 
 class SpimexTradingResults(UuidMixin):
@@ -48,7 +51,7 @@ class SpimexTradingResults(UuidMixin):
     including product details, delivery information, and trading statistics.
 
     Attributes:
-        uuid (UUID): Primary key, automatically generated UUID.
+        id (int): Primary key, automatically generated.
         exchange_product_id (str): Unique identifier for the exchange product.
         exchange_product_name (str): Full name of the exchange product.
         oil_id (str): 4-character identifier for the oil type.
@@ -58,7 +61,7 @@ class SpimexTradingResults(UuidMixin):
         volume (int): Total trading volume for the product.
         total (int): Total monetary value of trades.
         count (int): Number of trades executed.
-        date (Date): Trading date, defaults to current date.
+        date (Date): Date of the trading results.
         created_on (DateTime): Record creation timestamp, auto-set to now.
         updated_on (DateTime): Last update timestamp, auto-set to now.
 
@@ -112,8 +115,7 @@ class SpimexTradingResults(UuidMixin):
     )
     date: Mapped[Date] = default_mapped_column(
         Date(),
-        default=func.current_date(),
-        comment="Trading date, defaults to current date",
+        comment="Date of the trading results",
     )
     created_on: Mapped[DateTime] = default_mapped_column(
         DateTime(),
