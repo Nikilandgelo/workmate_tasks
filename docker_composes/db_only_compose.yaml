@@ -1,0 +1,21 @@
+name: postgres_only_compose
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres
+    env_file:
+      - ../.env
+    healthcheck:
+      test: "pg_isready -U $POSTGRES_USER"
+      interval: 3s
+      timeout: 7s
+      retries: 6
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
