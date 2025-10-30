@@ -137,6 +137,8 @@ celerybeat.pid
 
 # Environments
 .env
+.env.dev
+.env.test
 env/
 venv/
 ENV/
@@ -175,3 +177,4 @@ cython_debug/
 #.idea/
 
 requirements.txt
+.codebuddy
